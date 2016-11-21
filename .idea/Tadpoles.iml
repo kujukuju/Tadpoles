@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="WEB_MODULE" version="4">
+  <component name="NewModuleRootManager">
+    <content url="file://$MODULE_DIR$">
+      <excludeFolder url="file://$MODULE_DIR$/libs/pixi.js/scripts" />
+      <excludeFolder url="file://$MODULE_DIR$/libs/pixi.js/src" />
+      <excludeFolder url="file://$MODULE_DIR$/libs/pixi.js/test" />
+      <excludeFolder url="file://$MODULE_DIR$/libs/synaptic/src" />
+      <excludeFolder url="file://$MODULE_DIR$/libs/synaptic/test" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+  </component>
+</module>
