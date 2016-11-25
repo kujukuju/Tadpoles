@@ -4,12 +4,14 @@
 
 var Demo = {};
 
+var GameInput = new StaticGameInput();
 var GameLoop = new StaticGameLoop();
 var GameTime = new StaticGameTime();
 var Graphics = new StaticGraphics();
 var State = new StaticState();
 
 window.onload = function() {
+    GameInput.init();
     Graphics.init();
 
     requestAnimationFrame(GameLoop.tick);

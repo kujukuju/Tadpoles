@@ -7,11 +7,11 @@ var Tadpole = function() {
     this.MAX_FORCE = 0.2;
     this.MASS = 0.3;
     this.RADIUS = 4;
-    this.MAX_ITERATION_COUNT = 10000;
+    this.MAX_ITERATION_COUNT = 2000;
     this.pos = new Vector(0, 0);
     this.vel = new Vector(0, 0);
     this.accel = new Vector(0, 0);
-    this.network = new synaptic.Architect.Perceptron(State.TADPOLE_COUNT * 4, 25, 3);
+    this.network = new synaptic.Architect.Perceptron(State.TADPOLE_COUNT * 4 + 2, State.TADPOLE_COUNT * 4 + 2, 3);
 
     this.iterationCount = 0;
 
@@ -26,6 +26,8 @@ var Tadpole = function() {
             input.push(tadpole.vel.x);
             input.push(tadpole.vel.y);
         }
+        input.push(GameInput.mousePos[0]);
+        input.push(GameInput.mousePos[1]);
 
         let output = this.network.activate(input);
         this.moveTo(output, delta);
@@ -158,6 +160,18 @@ var Tadpole = function() {
                     count++;
                 }
             }
+        }
+
+        let mousePos = new Vector(GameInput.mousePos[0], GameInput.mousePos[1]);
+        let distance = this.pos.dist(mousePos);
+        if (distance < 96 && distance > 0) {
+            let difference = this.pos.copy().sub(mousePos);
+            difference.normalize();
+            difference.div(distance);
+            difference.mul(100);
+            sum.add(difference);
+
+            count++;
         }
 
         if (!count) {
