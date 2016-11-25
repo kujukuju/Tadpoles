@@ -6,6 +6,8 @@ var StaticState = function() {
     this.TADPOLE_COUNT = 9;
     this.tadpoles = [];
 
+    window.globalNetwork = new synaptic.Architect.Perceptron(this.TADPOLE_COUNT * 4 + 2, this.TADPOLE_COUNT * 4 + 2, 2);
+
     this.update = function() {
         let delta = GameTime.getDeltaTime();
         delta = 16;

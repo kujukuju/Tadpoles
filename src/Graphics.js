@@ -14,6 +14,7 @@ var StaticGraphics = function() {
         for (let i = 0; i < State.TADPOLE_COUNT; i++) {
             let tadpole = new Tadpole();
             tadpole.init();
+            tadpole.network = globalNetwork;
 
             State.tadpoles[i] = tadpole;
         }

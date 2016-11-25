@@ -7,22 +7,33 @@ var Tadpole = function() {
     this.MAX_FORCE = 0.2;
     this.MASS = 0.3;
     this.RADIUS = 4;
-    this.MAX_ITERATION_COUNT = 2000;
+    this.MAX_ITERATION_COUNT = 4000;
     this.pos = new Vector(0, 0);
     this.vel = new Vector(0, 0);
     this.accel = new Vector(0, 0);
-    this.network = new synaptic.Architect.Perceptron(State.TADPOLE_COUNT * 4 + 2, State.TADPOLE_COUNT * 4 + 2, 3);
+    this.network = null;
 
     this.iterationCount = 0;
 
     this.update = function(delta) {
         // neural net
+        let average = new Vector(0, 0);
+        for (let i = 0; i < State.tadpoles.length; i++) {
+            let tadpole = State.tadpoles[i];
+
+            average.add(tadpole.pos);
+        }
+        average.div(State.tadpoles.length);
+
         let input = [];
         for (let i = 0; i < State.tadpoles.length; i++) {
             let tadpole = State.tadpoles[i];
 
-            input.push(tadpole.pos.x);
-            input.push(tadpole.pos.y);
+            let deltaX = tadpole.pos.x - average.x;
+            let deltaY = tadpole.pos.y - average.y;
+
+            input.push(deltaX);
+            input.push(deltaY);
             input.push(tadpole.vel.x);
             input.push(tadpole.vel.y);
         }
@@ -63,15 +74,15 @@ var Tadpole = function() {
     this.moveTo = function(output, delta) {
         let force = new Vector(0, 0);
 
-        let target = new Vector(output[0] * Demo.renderer.width, output[1] * Demo.renderer.height);
-        let angle = (output[2] * Math.PI * 2) - Math.PI;
+        let target = new Vector(this.pos.x + output[0] * Demo.renderer.width, this.pos.y + output[1] * Demo.renderer.height);
+        let angle = Math.atan2(target.y - this.pos.y, target.x - this.pos.y);
 
         let separation = this.separate();
         let alignment = this.align().setAngle(angle);
         let cohesion = this.seek(target);
 
         force.add(separation);
-        force.add(alignment);
+        //force.add(alignment);
         force.add(cohesion);
 
         this.applyForce(force);
@@ -136,11 +147,15 @@ var Tadpole = function() {
         let cohesion = this.cohesion();
         let targetX = cohesion.x / Demo.renderer.width;
         let targetY = cohesion.y / Demo.renderer.height;
+        let posX = this.pos.x / Demo.renderer.width;
+        let posY = this.pos.y / Demo.renderer.height;
+        let deltaX = targetX - posX;
+        let deltaY = targetY - posY;
 
         let alignment = this.align();
-        let targetAngle = (alignment.angle() + Math.PI) / (Math.PI * 2);
+        let targetAngle = alignment.angle();
 
-        return [targetX, targetY, targetAngle];
+        return [deltaX, deltaY];
     };
 
     this.separate = function() {
@@ -164,11 +179,12 @@ var Tadpole = function() {
 
         let mousePos = new Vector(GameInput.mousePos[0], GameInput.mousePos[1]);
         let distance = this.pos.dist(mousePos);
-        if (distance < 96 && distance > 0) {
+        if (distance > 48) {
             let difference = this.pos.copy().sub(mousePos);
+            difference.mul(-1);
             difference.normalize();
-            difference.div(distance);
-            difference.mul(100);
+            // difference.div(distance);
+            difference.mul(0.1);
             sum.add(difference);
 
             count++;
@@ -204,6 +220,8 @@ var Tadpole = function() {
         }
 
         sum.div(count);
+        sum.sub(this.pos);
+
 
         return sum;
     };
